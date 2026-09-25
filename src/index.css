@@ -1,0 +1,191 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #0a0b08;
+  --color-char: #101208;
+  --color-panel: #14160c;
+  --color-bone: #f2f1e8;
+  --color-dim: #9a9c8c;
+  --color-acid: #b6ff00;
+  --color-acid-dim: #7db300;
+  --color-warn: #ffb300;
+  --color-danger: #ff3b30;
+  --color-line: rgba(242, 241, 232, 0.14);
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--color-ink);
+  color: var(--color-bone);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  margin: 0;
+}
+
+/* thin technical scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0b08;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2d1c;
+  border-radius: 0;
+}
+
+/* ---------- texture helpers ---------- */
+
+/* subtle film grain overlay */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  z-index: 5;
+}
+
+/* CRT scanlines overlay */
+.scanlines::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.18) 3px,
+    rgba(0, 0, 0, 0.18) 4px
+  );
+  z-index: 4;
+}
+
+/* glass panel */
+.glass {
+  background: rgba(16, 18, 8, 0.62);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--color-line);
+}
+
+.tech-border {
+  border: 1px solid var(--color-line);
+}
+
+/* ---------- animations ---------- */
+
+@keyframes scanline-y {
+  0% {
+    top: -8%;
+  }
+  100% {
+    top: 108%;
+  }
+}
+.anim-scanline {
+  animation: scanline-y 2.6s linear infinite;
+}
+
+@keyframes reticle-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.anim-reticle {
+  animation: reticle-spin 14s linear infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+.anim-pulse-ring {
+  animation: pulse-ring 0.7s ease-out forwards;
+}
+
+@keyframes blink-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.anim-blink {
+  animation: blink-soft 1.6s ease-in-out infinite;
+}
+
+@keyframes marquee-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.anim-marquee {
+  animation: marquee-x 22s linear infinite;
+}
+
+@keyframes screen-shake {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-10px, 6px);
+  }
+  40% {
+    transform: translate(9px, -7px);
+  }
+  60% {
+    transform: translate(-7px, -5px);
+  }
+  80% {
+    transform: translate(6px, 8px);
+  }
+}
+.anim-shake {
+  animation: screen-shake 0.45s ease-in-out;
+}
+
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.anim-float {
+  animation: float-y 5s ease-in-out infinite;
+}
+
+.text-glow-acid {
+  text-shadow: 0 0 18px rgba(182, 255, 0, 0.55), 0 0 60px rgba(182, 255, 0, 0.2);
+}
+
+video {
+  object-fit: cover;
+}
