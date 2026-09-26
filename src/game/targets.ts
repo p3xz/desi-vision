@@ -10,6 +10,8 @@ export interface Target {
   xp: number;
   /** Flavor line shown on the target card. */
   hint: string;
+  /** ASCII art shown on the target card for tap-to-tag targets. */
+  art?: string;
 }
 
 export const TARGETS: Target[] = [
@@ -100,6 +102,33 @@ export const TARGETS: Target[] = [
     manual: true,
     xp: 500,
     hint: "Handcrafted footwear, maximum swag.",
+  },
+  {
+    id: "diya",
+    name: "DIYA",
+    cocoClasses: null,
+    manual: true,
+    xp: 500,
+    hint: "Festival-grade flame. Handle with pride.",
+    art: "   ( )\n  (   )\n   \\_/",
+  },
+  {
+    id: "tabla",
+    name: "TABLA",
+    cocoClasses: null,
+    manual: true,
+    xp: 500,
+    hint: "Rhythm section of every family function.",
+    art: "  ___   ___\n (   ) (   )\n  \\_/   \\_/",
+  },
+  {
+    id: "kulhad",
+    name: "KULHAD",
+    cocoClasses: null,
+    manual: true,
+    xp: 500,
+    hint: "Chai tastes better in clay. Science.",
+    art: " \\     /\n  \\   /\n   \\_/",
   },
 ];
 

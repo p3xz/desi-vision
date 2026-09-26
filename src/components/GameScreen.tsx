@@ -524,6 +524,11 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
                 <>
                   <div className="flex items-end justify-between gap-4">
                     <div>
+                      {target.art && (
+                        <pre className="mb-2 font-mono text-[11px] leading-tight text-acid/70">
+                          {target.art}
+                        </pre>
+                      )}
                       <div className="font-mono text-[11px] tracking-[0.3em] text-dim">CATCH</div>
                       <AnimatePresence mode="wait">
                         <motion.div

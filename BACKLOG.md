@@ -5,7 +5,7 @@ focused commit.
 
 ## Targets and content
 
-1. Add 3 more manual-tag targets (e.g. DIYA, TABLA, KULHAD) with tap-to-tag art
+1. [x] Add 3 more manual-tag targets (DIYA, TABLA, KULHAD) with tap-to-tag art
    and flavor hints.
 2. Add 10 new scanner humor lines, keep them rare in the feed rotation.
 3. Add a Hinglish toggle for scanner messages (BHAI CAMERA IDHAR energy).
