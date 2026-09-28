@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { randomHumor } from "../game/humor";
+import { HINGLISH_SCANNER, randomHumor } from "../game/humor";
 import { sound } from "../game/sounds";
 import {
   CATCH_THRESHOLD,
@@ -67,8 +67,20 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
   const [shake, setShake] = useState(0);
   const [tapBox, setTapBox] = useState<{ x: number; y: number } | null>(null);
   const [muted, setMuted] = useState(sound.isMuted());
+  const [hinglish, setHinglish] = useState(
+    () => localStorage.getItem("dv-hinglish") === "1",
+  );
+  /* effects with locked deps also call feed helpers, so mirror the toggle */
+  const hinglishRef = useRef(hinglish);
+  hinglishRef.current = hinglish;
 
   /* ---------------- helpers ---------------- */
+
+  /** Swap a fixed scanner message for its Hinglish version when toggled on. */
+  const line = (en: string) =>
+    hinglishRef.current ? (HINGLISH_SCANNER[en] ?? en) : en;
+  const feedHumor = (exclude?: string) =>
+    randomHumor(exclude, hinglishRef.current);
 
   const showFeed = (msg: string, ms = 2400) => {
     setFeed(msg);
@@ -101,7 +113,7 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
     sound.catch();
     const comboLevel = s.combo;
     if (comboLevel >= 2) window.setTimeout(() => sound.combo(comboLevel), 260);
-    if (Math.random() < 0.35) showFeed(randomHumor());
+    if (Math.random() < 0.35) showFeed(feedHumor());
     window.setTimeout(() => {
       if (!mountedRef.current) return;
       setCatchFx(null);
@@ -124,7 +136,7 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
     const near = ds.find(
       (d) => classes.includes(d.label) && d.score >= NEAR_THRESHOLD,
     );
-    if (near) showFeed("IS THAT IT?", 1400);
+    if (near) showFeed(line("IS THAT IT?"), 1400);
   };
 
   /* ---------------- camera + model boot ---------------- */
@@ -187,7 +199,7 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
       if (!cancelled && mountedRef.current) {
         setBooted(true);
         sound.start();
-        showFeed("SCANNER READY", 1800);
+        showFeed(line("SCANNER READY"), 1800);
       }
     };
 
@@ -253,7 +265,7 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
         s.combo = 0;
         setCombo(0);
       }
-      showFeed(Math.random() < 0.5 ? "TARGET ESCAPED" : randomHumor());
+      showFeed(Math.random() < 0.5 ? line("TARGET ESCAPED") : feedHumor());
       sound.fail();
       nextTarget();
     }, 6000);
@@ -273,7 +285,7 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
     const y = (e.clientY - r.top) / r.height;
     setTapBox({ x, y });
     sound.tag();
-    showFeed("ASSISTED TAG ACCEPTED", 1200);
+    showFeed(line("ASSISTED TAG ACCEPTED"), 1200);
     window.setTimeout(() => {
       if (!mountedRef.current) return;
       doCatch(t.name, "ASSISTED TAG", t.xp);
@@ -313,6 +325,14 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
     const next = !muted;
     sound.setMuted(next);
     setMuted(next);
+  };
+
+  const toggleHinglish = () => {
+    setHinglish((h) => {
+      const next = !h;
+      localStorage.setItem("dv-hinglish", next ? "1" : "0");
+      return next;
+    });
   };
 
   /* ---------------- render ---------------- */
@@ -469,6 +489,17 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
               aria-label="Toggle sound"
             >
               {muted ? "MUTED" : "SOUND"}
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleHinglish();
+                sound.click();
+              }}
+              className="glass px-3 py-2 font-mono text-[10px] tracking-widest text-dim hover:text-bone"
+              aria-label="Toggle Hinglish scanner messages"
+            >
+              {hinglish ? "HINGLISH" : "ENGLISH"}
             </button>
             <button
               onClick={(e) => {
