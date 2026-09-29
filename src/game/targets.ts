@@ -10,6 +10,8 @@ export interface Target {
   xp: number;
   /** Flavor line shown on the target card. */
   hint: string;
+  /** Optional per-target catch threshold; defaults to CATCH_THRESHOLD. */
+  threshold?: number;
   /** ASCII art shown on the target card for tap-to-tag targets. */
   art?: string;
 }
@@ -22,6 +24,7 @@ export const TARGETS: Target[] = [
     manual: false,
     xp: 200,
     hint: "The backbone of every village gathering.",
+    threshold: 0.65, // chairs catch too easily at the default threshold
   },
   {
     id: "steel-glass",
@@ -30,6 +33,7 @@ export const TARGETS: Target[] = [
     manual: false,
     xp: 250,
     hint: "Unbreakable. Like family bonds.",
+    threshold: 0.6, // cups are detected at high confidence very often
   },
   {
     id: "lassi-glass",
@@ -38,6 +42,7 @@ export const TARGETS: Target[] = [
     manual: false,
     xp: 250,
     hint: "Thick, creamy, legendary.",
+    threshold: 0.6, // cups are detected at high confidence very often
   },
   {
     id: "milk-can",
@@ -62,6 +67,7 @@ export const TARGETS: Target[] = [
     manual: false,
     xp: 350,
     hint: "The undisputed king of the fields.",
+    threshold: 0.45, // tractor bodies confuse the model; be forgiving
   },
   {
     id: "tractor-trolley",
@@ -70,6 +76,7 @@ export const TARGETS: Target[] = [
     manual: false,
     xp: 350,
     hint: "Hauls everything. Including pride.",
+    threshold: 0.45, // tractor bodies confuse the model; be forgiving
   },
   {
     id: "charpai",
@@ -136,6 +143,11 @@ export const TARGETS: Target[] = [
 export const CATCH_THRESHOLD = 0.55;
 /** Below catch threshold but worth an "IS THAT IT?" nudge. */
 export const NEAR_THRESHOLD = 0.3;
+
+/** Effective catch threshold for a target, falling back to CATCH_THRESHOLD. */
+export function catchThresholdFor(target: Target): number {
+  return target.threshold ?? CATCH_THRESHOLD;
+}
 
 export function randomTarget(excludeId?: string): Target {
   const pool = TARGETS.filter((t) => t.id !== excludeId);

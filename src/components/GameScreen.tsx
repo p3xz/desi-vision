@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { HINGLISH_SCANNER, randomHumor } from "../game/humor";
 import { sound } from "../game/sounds";
 import {
-  CATCH_THRESHOLD,
+  catchThresholdFor,
   NEAR_THRESHOLD,
   randomTarget,
   type Target,
@@ -127,7 +127,7 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
     const classes = t.cocoClasses;
     if (t.manual || mode === "free" || !classes) return;
     const match = ds.find(
-      (d) => classes.includes(d.label) && d.score >= CATCH_THRESHOLD,
+      (d) => classes.includes(d.label) && d.score >= catchThresholdFor(t),
     );
     if (match) {
       doCatch(t.name, `${Math.round(match.score * 100)}%`, t.xp);
