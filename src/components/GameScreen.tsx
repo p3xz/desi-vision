@@ -112,6 +112,10 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
     setShake((k) => k + 1);
     sound.catch();
     const comboLevel = s.combo;
+    /* haptic pulse on catch for mobile devices */
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+      navigator.vibrate(comboLevel > 1 ? [25, 40, 25] : 25);
+    }
     if (comboLevel >= 2) window.setTimeout(() => sound.combo(comboLevel), 260);
     if (Math.random() < 0.35) showFeed(feedHumor());
     window.setTimeout(() => {
