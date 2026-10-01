@@ -27,7 +27,7 @@ export const MODE_META: Record<
   },
   chaos: {
     title: "CHAOS MODE",
-    tagline: "Targets rotate every 6 seconds. No mercy.",
+    tagline: "Two targets at once, rotated every 6 seconds. No mercy.",
     duration: 45,
   },
   free: {

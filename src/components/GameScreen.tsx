@@ -46,7 +46,12 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const detectorRef = useRef<Detector | null>(null);
-  const targetRef = useRef<Target>(randomTarget());
+  /* CHAOS MODE rolls two active targets at once; other modes roll one. */
+  const rollPair = (): [Target, Target] => {
+    const a = randomTarget();
+    return [a, randomTarget(a.id)];
+  };
+  const targetRef = useRef<Target[]>(mode === "chaos" ? rollPair() : [randomTarget()]);
   const lockRef = useRef(false);
   const statsRef = useRef({ score: 0, combo: 0, best: 0, catches: 0 });
   const timeRef = useRef<number | null>(meta.duration);
@@ -57,7 +62,7 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
   const [boot, setBoot] = useState("REQUESTING CAMERA");
   const [booted, setBooted] = useState(false);
   const [camError, setCamError] = useState<CameraErrorKind | null>(null);
-  const [target, setTarget] = useState<Target>(targetRef.current);
+  const [targets, setTargets] = useState<Target[]>(targetRef.current);
   const [detections, setDetections] = useState<Detection[]>([]);
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
@@ -90,14 +95,27 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
     }, ms);
   };
 
-  const nextTarget = () => {
-    const nt = randomTarget(targetRef.current.id);
-    targetRef.current = nt;
-    setTarget(nt);
+  /**
+   * Roll the next round of targets. In CHAOS MODE there are two active
+   * targets; catching one only replaces that one, the other stays in play.
+   */
+  const nextTarget = (caughtId?: string) => {
+    let next: Target[];
+    if (mode === "chaos" && caughtId) {
+      const kept = targetRef.current.find((t) => t.id !== caughtId);
+      const nt = randomTarget(kept?.id);
+      next = kept ? [kept, nt] : [nt, randomTarget(nt.id)];
+    } else if (mode === "chaos") {
+      next = rollPair();
+    } else {
+      next = [randomTarget(targetRef.current[0].id)];
+    }
+    targetRef.current = next;
+    setTargets(next);
     setTapBox(null);
   };
 
-  const doCatch = (label: string, sub: string, baseXp: number) => {
+  const doCatch = (t: Target, label: string, sub: string, baseXp: number) => {
     if (lockRef.current || !mountedRef.current) return;
     lockRef.current = true;
     const s = statsRef.current;
@@ -121,24 +139,31 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
     window.setTimeout(() => {
       if (!mountedRef.current) return;
       setCatchFx(null);
-      nextTarget();
+      nextTarget(mode === "chaos" ? t.id : undefined);
       lockRef.current = false;
     }, 1400);
   };
 
   const handleDetections = (ds: Detection[]) => {
-    const t = targetRef.current;
-    const classes = t.cocoClasses;
-    if (t.manual || mode === "free" || !classes) return;
-    const match = ds.find(
-      (d) => classes.includes(d.label) && d.score >= catchThresholdFor(t),
-    );
-    if (match) {
-      doCatch(t.name, `${Math.round(match.score * 100)}%`, t.xp);
-      return;
+    if (mode === "free") return;
+    /* two active targets in CHAOS MODE: the first solid match wins the tick */
+    for (const t of targetRef.current) {
+      const classes = t.cocoClasses;
+      if (t.manual || !classes) continue;
+      const match = ds.find(
+        (d) => classes.includes(d.label) && d.score >= catchThresholdFor(t),
+      );
+      if (match) {
+        doCatch(t, t.name, `${Math.round(match.score * 100)}%`, t.xp);
+        return;
+      }
     }
-    const near = ds.find(
-      (d) => classes.includes(d.label) && d.score >= NEAR_THRESHOLD,
+    const near = targetRef.current.find(
+      (t) =>
+        !t.manual &&
+        t.cocoClasses?.some(
+          (c) => ds.some((d) => d.label === c && d.score >= NEAR_THRESHOLD),
+        ),
     );
     if (near) showFeed(line("IS THAT IT?"), 1400);
   };
@@ -280,8 +305,9 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
   /* ---------------- manual tap-to-tag ---------------- */
 
   const onVideoTap = (e: React.MouseEvent) => {
-    const t = targetRef.current;
-    if (!t.manual || lockRef.current || mode === "free") return;
+    /* tap-to-tag completes the first manual target currently in play */
+    const t = targetRef.current.find((tg) => tg.manual);
+    if (!t || lockRef.current || mode === "free") return;
     const el = wrapRef.current;
     if (!el) return;
     const r = el.getBoundingClientRect();
@@ -292,7 +318,7 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
     showFeed(line("ASSISTED TAG ACCEPTED"), 1200);
     window.setTimeout(() => {
       if (!mountedRef.current) return;
-      doCatch(t.name, "ASSISTED TAG", t.xp);
+      doCatch(t, t.name, "ASSISTED TAG", t.xp);
     }, 650);
   };
 
@@ -406,9 +432,9 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
           detections.map((d, i) => {
             const b = mapBox(d);
             if (!b) return null;
-            const isTarget =
-              !target.manual &&
-              target.cocoClasses?.includes(d.label);
+            const isTarget = targets.some(
+              (t) => !t.manual && t.cocoClasses?.includes(d.label),
+            );
             return (
               <div
                 key={`${d.label}-${i}`}
@@ -536,7 +562,7 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
         </div>
 
         {/* manual tag banner */}
-        {booted && target.manual && mode !== "free" && (
+        {booted && targets.some((t) => t.manual) && mode !== "free" && (
           <div className="pointer-events-none absolute top-36 right-0 left-0 z-20 flex justify-center px-4">
             <div className="border border-warn/60 bg-ink/80 px-4 py-2 text-center font-mono text-[11px] tracking-[0.18em] text-warn">
               OBJECT TOO DESI TO CLASSIFY. TAP THE OBJECT TO TAG IT.
@@ -555,29 +581,71 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
                     Point at anything. The AI reports what it sees.
                   </div>
                 </div>
+              ) : mode === "chaos" ? (
+                <>
+                  <div className="flex items-end justify-between gap-4">
+                    <div className="font-mono text-[11px] tracking-[0.3em] text-danger">
+                      DOUBLE TARGET. NO MERCY.
+                    </div>
+                    <div className="text-right">
+                      <div className="font-mono text-2xl font-bold text-bone">
+                        {timeLeft != null ? formatTime(timeLeft) : "--:--"}
+                      </div>
+                      <div className="font-mono text-[11px] tracking-[0.25em] text-acid">
+                        COMBO ×{combo}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-2 grid grid-cols-2 gap-3">
+                    {targets.map((t) => (
+                      <div key={t.id} className="border border-bone/10 bg-ink/60 px-3 py-2">
+                        <div className="font-mono text-[10px] tracking-[0.3em] text-dim">CATCH</div>
+                        <AnimatePresence mode="wait">
+                          <motion.div
+                            key={t.id}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -8 }}
+                            transition={{ duration: 0.25 }}
+                            className="text-glow-acid text-xl font-bold tracking-tight text-acid"
+                          >
+                            {t.name}
+                          </motion.div>
+                        </AnimatePresence>
+                        <div className="mt-0.5 text-[11px] text-dim">{t.hint}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-3 h-1.5 w-full bg-bone/10">
+                    <div
+                      className="h-full bg-danger transition-all duration-1000 ease-linear"
+                      style={{ width: `${progress * 100}%` }}
+                    />
+                  </div>
+                </>
               ) : (
                 <>
                   <div className="flex items-end justify-between gap-4">
                     <div>
-                      {target.art && (
+                      {targets[0].art && (
                         <pre className="mb-2 font-mono text-[11px] leading-tight text-acid/70">
-                          {target.art}
+                          {targets[0].art}
                         </pre>
                       )}
                       <div className="font-mono text-[11px] tracking-[0.3em] text-dim">CATCH</div>
                       <AnimatePresence mode="wait">
                         <motion.div
-                          key={target.id}
+                          key={targets[0].id}
                           initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -8 }}
                           transition={{ duration: 0.25 }}
                           className="text-glow-acid text-3xl font-bold tracking-tight text-acid"
                         >
-                          {target.name}
+                          {targets[0].name}
                         </motion.div>
                       </AnimatePresence>
-                      <div className="mt-1 text-xs text-dim">{target.hint}</div>
+                      <div className="mt-1 text-xs text-dim">{targets[0].hint}</div>
                     </div>
                     <div className="text-right">
                       <div className="font-mono text-2xl font-bold text-bone">

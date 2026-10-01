@@ -11,7 +11,7 @@ focused commit.
 3. [x] Add a Hinglish toggle for scanner messages (BHAI CAMERA IDHAR energy).
 4. [x] Per-target difficulty tuning: raise CATCH_THRESHOLD for easy classes like
    chair, lower it slightly for truck.
-5. Multi-target chaos rounds: two active targets at once in CHAOS MODE.
+5. [x] Multi-target chaos rounds: two active targets at once in CHAOS MODE.
 
 ## Game feel
 
