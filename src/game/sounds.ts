@@ -89,11 +89,23 @@ class SoundEngine {
     this.blip(880, 0.18, "triangle", 0.12, 0.18);
   }
 
-  /** Successful catch: bright ascending arp */
+  /** Successful catch: bright ascending arp, picked from 3 variations */
   catch(): void {
-    this.blip(523, 0.09, "triangle", 0.16);
-    this.blip(784, 0.09, "triangle", 0.16, 0.07);
-    this.blip(1047, 0.2, "triangle", 0.16, 0.14);
+    const pick = Math.floor(Math.random() * 3);
+    if (pick === 0) {
+      this.blip(523, 0.09, "triangle", 0.16);
+      this.blip(784, 0.09, "triangle", 0.16, 0.07);
+      this.blip(1047, 0.2, "triangle", 0.16, 0.14);
+    } else if (pick === 1) {
+      this.blip(587, 0.08, "triangle", 0.16);
+      this.blip(880, 0.08, "triangle", 0.16, 0.07);
+      this.blip(1175, 0.22, "triangle", 0.16, 0.14);
+    } else {
+      this.blip(659, 0.08, "triangle", 0.16);
+      this.blip(988, 0.08, "triangle", 0.16, 0.06);
+      this.blip(1319, 0.08, "triangle", 0.16, 0.12);
+      this.blip(1568, 0.2, "triangle", 0.16, 0.18);
+    }
   }
 
   /** Combo sting, pitch rises with the combo level */

@@ -16,7 +16,7 @@ focused commit.
 ## Game feel
 
 6. [x] Haptics: `navigator.vibrate` pulse on catch for mobile devices.
-7. Catch jingle variations: pick from 3 arpeggios so repeats feel fresh.
+7. [x] Catch jingle variations: pick from 3 arpeggios so repeats feel fresh.
 8. Detection smoothing: temporal filtering so boxes stop flickering between
    scan ticks.
 9. Front/back camera switch button in the top bar.
