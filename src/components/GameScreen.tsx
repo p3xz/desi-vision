@@ -19,6 +19,11 @@ import {
   type Detection,
   type Detector,
 } from "../vision/detector";
+import {
+  emptyTracks,
+  smoothDetections,
+  type TrackedDetection,
+} from "../vision/smoother";
 import CameraError from "./CameraError";
 
 interface Props {
@@ -54,6 +59,9 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
   const targetRef = useRef<Target[]>(mode === "chaos" ? rollPair() : [randomTarget()]);
   const lockRef = useRef(false);
   const statsRef = useRef({ score: 0, combo: 0, best: 0, catches: 0 });
+  /* smoothed detection tracks feed the rendered boxes; raw detections
+     drive catch logic so gameplay thresholds stay honest */
+  const tracksRef = useRef<TrackedDetection[]>(emptyTracks());
   const timeRef = useRef<number | null>(meta.duration);
   const feedTimer = useRef<number | null>(null);
   const mountedRef = useRef(true);
@@ -179,6 +187,9 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
         setCamError("unsupported");
         return;
       }
+      /* fresh camera session: drop stale smoothed tracks from the last run */
+      tracksRef.current = emptyTracks();
+      setDetections([]);
       setBoot("REQUESTING CAMERA");
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -254,7 +265,8 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
       try {
         const ds = await det.detect(v);
         if (!mountedRef.current) return;
-        setDetections(ds.filter((d) => d.score >= 0.3));
+        tracksRef.current = smoothDetections(tracksRef.current, ds);
+        setDetections(tracksRef.current.filter((d) => d.score >= 0.3));
         handleDetections(ds);
       } catch {
         /* transient model hiccup, keep scanning */
