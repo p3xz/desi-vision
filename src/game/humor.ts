@@ -69,6 +69,9 @@ export const HINGLISH_SCANNER: Record<string, string> = {
   "TARGET ESCAPED": "TARGET BHAAG GAYA",
   "IS THAT IT?": "YEH HAI KYA?",
   "ASSISTED TAG ACCEPTED": "TAG LAG GAYA",
+  "CAMERA FLIPPED": "CAMERA PALAT GAYA",
+  "CAMERA SWITCH FAILED": "CAMERA SWITCH FAIL HO GAYA",
+  "NO SECOND CAMERA": "DOOSRA CAMERA NAHI",
 };
 
 export function randomHumor(exclude?: string, hinglish = false): string {

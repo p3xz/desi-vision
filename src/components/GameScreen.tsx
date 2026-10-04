@@ -86,6 +86,10 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
   /* effects with locked deps also call feed helpers, so mirror the toggle */
   const hinglishRef = useRef(hinglish);
   hinglishRef.current = hinglish;
+  /* camera flip state; mirrored in a ref for the locked-deps boot effect */
+  const [facing, setFacing] = useState<"environment" | "user">("environment");
+  const facingRef = useRef(facing);
+  facingRef.current = facing;
 
   /* ---------------- helpers ---------------- */
 
@@ -101,6 +105,39 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
     feedTimer.current = window.setTimeout(() => {
       if (mountedRef.current) setFeed(null);
     }, ms);
+  };
+
+  /**
+   * Ask the device for a camera, preferring the exact facing requested so a
+   * flip actually lands on the other lens. Falls back to a hint when the
+   * device refuses the exact constraint.
+   */
+  const requestCamera = async (f: "environment" | "user") => {
+    const constraints = (facingMode: ConstrainDOMString): MediaStreamConstraints => ({
+      video: {
+        facingMode,
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
+      },
+      audio: false,
+    });
+    try {
+      return await navigator.mediaDevices.getUserMedia(constraints({ exact: f }));
+    } catch (e) {
+      if (e instanceof Error && e.name === "OverconstrainedError") {
+        return await navigator.mediaDevices.getUserMedia(constraints({ ideal: f }));
+      }
+      throw e;
+    }
+  };
+
+  const attachStream = async (stream: MediaStream) => {
+    streamRef.current = stream;
+    const v = videoRef.current;
+    if (v) {
+      v.srcObject = stream;
+      await v.play().catch(() => undefined);
+    }
   };
 
   /**
@@ -192,24 +229,12 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
       setDetections([]);
       setBoot("REQUESTING CAMERA");
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: { ideal: "environment" },
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
-          },
-          audio: false,
-        });
+        const stream = await requestCamera(facingRef.current);
         if (cancelled) {
           stream.getTracks().forEach((tr) => tr.stop());
           return;
         }
-        streamRef.current = stream;
-        const v = videoRef.current;
-        if (v) {
-          v.srcObject = stream;
-          await v.play().catch(() => undefined);
-        }
+        await attachStream(stream);
       } catch (e) {
         if (cancelled) return;
         const name = e instanceof Error ? e.name : "";
@@ -377,6 +402,36 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
     });
   };
 
+  /** Flip between front and rear cameras mid-game without reloading the model. */
+  const switchCamera = async () => {
+    if (!booted || !mountedRef.current) return;
+    const next = facingRef.current === "environment" ? "user" : "environment";
+    let stream: MediaStream;
+    try {
+      stream = await requestCamera(next);
+    } catch {
+      if (mountedRef.current) showFeed(line("CAMERA SWITCH FAILED"), 1600);
+      return;
+    }
+    if (!mountedRef.current) {
+      stream.getTracks().forEach((tr) => tr.stop());
+      return;
+    }
+    /* confirm the flip actually landed on the requested lens */
+    const reported = stream.getVideoTracks()[0]?.getSettings().facingMode;
+    if (reported && reported !== next) {
+      stream.getTracks().forEach((tr) => tr.stop());
+      showFeed(line("NO SECOND CAMERA"), 1600);
+      return;
+    }
+    streamRef.current?.getTracks().forEach((tr) => tr.stop());
+    await attachStream(stream);
+    facingRef.current = next;
+    setFacing(next);
+    sound.click();
+    showFeed(line("CAMERA FLIPPED"), 1400);
+  };
+
   /* ---------------- render ---------------- */
 
   if (camError) {
@@ -542,6 +597,16 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
               aria-label="Toggle Hinglish scanner messages"
             >
               {hinglish ? "HINGLISH" : "ENGLISH"}
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                void switchCamera();
+              }}
+              className="glass px-3 py-2 font-mono text-[10px] tracking-widest text-dim hover:text-bone"
+              aria-label="Switch camera"
+            >
+              {facing === "environment" ? "REAR CAM" : "FRONT CAM"}
             </button>
             <button
               onClick={(e) => {

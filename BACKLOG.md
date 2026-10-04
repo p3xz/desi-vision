@@ -19,7 +19,7 @@ focused commit.
 7. [x] Catch jingle variations: pick from 3 arpeggios so repeats feel fresh.
 8. [x] Detection smoothing: temporal filtering so boxes stop flickering between
    scan ticks.
-9. Front/back camera switch button in the top bar.
+9. [x] Front/back camera switch button in the top bar.
 10. Respect `prefers-reduced-motion`: disable screen shake and particles.
 
 ## Meta and sharing
