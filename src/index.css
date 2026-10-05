@@ -182,6 +182,20 @@ body {
   animation: float-y 5s ease-in-out infinite;
 }
 
+/* honor the OS reduced-motion setting: kill the decorative motion so the
+   game stays readable for users who ask for less animation */
+@media (prefers-reduced-motion: reduce) {
+  .anim-scanline,
+  .anim-reticle,
+  .anim-pulse-ring,
+  .anim-blink,
+  .anim-marquee,
+  .anim-float,
+  .anim-shake {
+    animation: none;
+  }
+}
+
 .text-glow-acid {
   text-shadow: 0 0 18px rgba(182, 255, 0, 0.55), 0 0 60px rgba(182, 255, 0, 0.2);
 }

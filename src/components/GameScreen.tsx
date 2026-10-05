@@ -86,6 +86,14 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
   /* effects with locked deps also call feed helpers, so mirror the toggle */
   const hinglishRef = useRef(hinglish);
   hinglishRef.current = hinglish;
+  /* static per mount: OS reduced-motion setting kills screen shake + particles */
+  const reducedMotion = useMemo(
+    () =>
+      typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    [],
+  );
   /* camera flip state; mirrored in a ref for the locked-deps boot effect */
   const [facing, setFacing] = useState<"environment" | "user">("environment");
   const facingRef = useRef(facing);
@@ -172,7 +180,8 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
     setScore(s.score);
     setCombo(s.combo);
     setCatchFx({ title: label, sub, xp: gained });
-    setShake((k) => k + 1);
+    /* no screen shake for reduced-motion users */
+    if (!reducedMotion) setShake((k) => k + 1);
     sound.catch();
     const comboLevel = s.combo;
     /* haptic pulse on catch for mobile devices */
@@ -377,7 +386,8 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
   };
 
   const particles = useMemo(() => {
-    if (!catchFx) return [];
+    /* reduced-motion users get the catch text, not the particle burst */
+    if (!catchFx || reducedMotion) return [];
     return Array.from({ length: 10 }, (_, i) => {
       const angle = (i / 10) * Math.PI * 2;
       return {
@@ -386,7 +396,7 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
         delay: Math.random() * 0.08,
       };
     });
-  }, [catchFx]);
+  }, [catchFx, reducedMotion]);
 
   const toggleMute = () => {
     const next = !muted;

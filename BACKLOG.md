@@ -20,7 +20,7 @@ focused commit.
 8. [x] Detection smoothing: temporal filtering so boxes stop flickering between
    scan ticks.
 9. [x] Front/back camera switch button in the top bar.
-10. Respect `prefers-reduced-motion`: disable screen shake and particles.
+10. [x] Respect `prefers-reduced-motion`: disable screen shake and particles.
 
 ## Meta and sharing
 
