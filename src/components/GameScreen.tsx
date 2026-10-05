@@ -815,6 +815,15 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
             <div className="text-3xl font-bold tracking-tight text-bone">
               DESI VISION<span className="text-acid">™</span>
             </div>
+            {/* Skeleton stand-ins for the camera viewport and target chips while the model loads */}
+            <div className="mt-8 w-full max-w-sm" aria-hidden="true">
+              <div className="skeleton aspect-video w-full rounded-sm" />
+              <div className="mt-3 flex gap-2">
+                <div className="skeleton h-8 w-24 rounded-sm" />
+                <div className="skeleton h-8 w-20 rounded-sm" />
+                <div className="skeleton h-8 flex-1 rounded-sm" />
+              </div>
+            </div>
             <div className="glass mt-8 w-full max-w-sm px-5 py-4 text-left">
               {["AI CORE ........ ONLINE", "DESI DATABASE ... LOADED"].map((l) => (
                 <div key={l} className="font-mono text-xs tracking-widest text-acid-dim">

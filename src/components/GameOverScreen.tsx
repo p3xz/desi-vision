@@ -87,6 +87,7 @@ export default function GameOverScreen({ stats, onRestart, onHome }: Props) {
                   onChange={(e) => setName(e.target.value)}
                   maxLength={16}
                   placeholder="YOUR NAME"
+                  aria-label="Your name for the leaderboard"
                   className="tech-border min-w-0 flex-1 bg-ink px-4 py-3 font-mono text-sm tracking-[0.2em] text-bone placeholder:text-dim/60 focus:border-acid focus:outline-none"
                 />
                 <button

@@ -203,3 +203,37 @@ body {
 video {
   object-fit: cover;
 }
+
+/* Visible keyboard focus: acid-green outline so keyboard users can
+   always see the focused button or input. */
+:focus-visible {
+  outline: 2px solid var(--color-acid);
+  outline-offset: 2px;
+}
+
+/* Skeleton shimmer for loading states (model boot overlay). */
+@keyframes dv-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    100deg,
+    rgba(242, 241, 232, 0.06) 40%,
+    rgba(242, 241, 232, 0.16) 50%,
+    rgba(242, 241, 232, 0.06) 60%
+  );
+  background-size: 200% 100%;
+  animation: dv-shimmer 1.4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
