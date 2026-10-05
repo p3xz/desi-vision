@@ -179,6 +179,42 @@ export function CreditsPage({ onBack }: PageProps) {
           </a>
         </p>
       </Section>
+      <Section title="FIND NAMISH">
+        <div className="flex flex-wrap gap-x-6 gap-y-2 font-mono text-[11px] tracking-[0.25em]">
+          <a
+            href="https://github.com/p3xz"
+            target="_blank"
+            rel="noreferrer"
+            className="text-acid-dim underline underline-offset-4 hover:text-acid"
+          >
+            GITHUB
+          </a>
+          <a
+            href="https://linkedin.com/in/namish-yadav-639769408"
+            target="_blank"
+            rel="noreferrer"
+            className="text-acid-dim underline underline-offset-4 hover:text-acid"
+          >
+            LINKEDIN
+          </a>
+          <a
+            href="https://instagram.com/nam7sh"
+            target="_blank"
+            rel="noreferrer"
+            className="text-acid-dim underline underline-offset-4 hover:text-acid"
+          >
+            INSTAGRAM
+          </a>
+          <a
+            href="https://namishhh.vercel.app"
+            target="_blank"
+            rel="noreferrer"
+            className="text-acid-dim underline underline-offset-4 hover:text-acid"
+          >
+            PORTFOLIO
+          </a>
+        </div>
+      </Section>
       <Section title="BUILT WITH">
         <p>
           React, TypeScript, Tailwind CSS, Framer Motion, and TensorFlow.js with

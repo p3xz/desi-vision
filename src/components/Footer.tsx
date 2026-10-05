@@ -45,6 +45,12 @@ export default function Footer({ onNavigate }: Props) {
             Namish Yadav
           </a>
         </div>
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 font-mono text-[10px] tracking-[0.25em]">
+          <a href="https://github.com/p3xz" target="_blank" rel="noreferrer" className="text-dim transition-colors hover:text-acid">GITHUB</a>
+          <a href="https://linkedin.com/in/namish-yadav-639769408" target="_blank" rel="noreferrer" className="text-dim transition-colors hover:text-acid">LINKEDIN</a>
+          <a href="https://instagram.com/nam7sh" target="_blank" rel="noreferrer" className="text-dim transition-colors hover:text-acid">INSTAGRAM</a>
+          <a href="https://namishhh.vercel.app" target="_blank" rel="noreferrer" className="text-dim transition-colors hover:text-acid">PORTFOLIO</a>
+        </div>
       </div>
     </footer>
   );
