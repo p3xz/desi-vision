@@ -676,7 +676,7 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
                     </div>
                     <div className="text-right">
                       <div className="font-mono text-2xl font-bold text-bone">
-                        {timeLeft != null ? formatTime(timeLeft) : "--:--"}
+                        {timeLeft != null ? formatTime(timeLeft) : formatTime(0)}
                       </div>
                       <div className="font-mono text-[11px] tracking-[0.25em] text-acid">
                         COMBO ×{combo}
@@ -736,7 +736,7 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
                     </div>
                     <div className="text-right">
                       <div className="font-mono text-2xl font-bold text-bone">
-                        {timeLeft != null ? formatTime(timeLeft) : "--:--"}
+                        {timeLeft != null ? formatTime(timeLeft) : formatTime(0)}
                       </div>
                       <div className="font-mono text-[11px] tracking-[0.25em] text-acid">
                         COMBO ×{combo}
