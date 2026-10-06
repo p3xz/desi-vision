@@ -88,4 +88,4 @@ the COCO-SSD model files.
 
 ## Credits
 
-Created by [Namish Yadav](https://insidcode.vercel.app). © 2026 Desi Vision.
+Created by [Namish Yadav](https://github.com/p3xz). © 2026 Desi Vision.
