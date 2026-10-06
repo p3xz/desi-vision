@@ -23,6 +23,8 @@ September 2026. First committed and deployed on 2026-09-25.
 
 ## What we used
 
+![TypeScript](https://skillicons.dev/icons?i=ts) ![React](https://skillicons.dev/icons?i=react) ![Vite](https://skillicons.dev/icons?i=vite) ![Tailwind CSS](https://skillicons.dev/icons?i=tailwind) ![TensorFlow](https://skillicons.dev/icons?i=tensorflow)
+
 - **React 19** with **TypeScript**
 - **TensorFlow.js** (`@tensorflow/tfjs`) with the **COCO-SSD** model
   (`@tensorflow-models/coco-ssd`)
