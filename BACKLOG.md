@@ -24,7 +24,7 @@ focused commit.
 
 ## Meta and sharing
 
-11. PWA manifest + icons so the game is installable from mobile browsers.
+11. [x] PWA manifest + icons so the game is installable from mobile browsers.
 12. Shareable score card: render final score to canvas and offer download.
 13. Persist best score per mode and show it on the start screen mode cards.
 14. Leaderboard reset button with a confirm step.
