@@ -1,5 +1,7 @@
 # Desi Vision
 
+![Preview](preview.png)
+
 > DESI VISION is a satirical Indian village-themed camera detection party game. Point your camera at the real world to catch targets like HOOKAH, TRACTOR, CHARPAI, and STEEL GLASS. It is a playable parody of real-time object detection that stays honest about what the model can and cannot actually recognize.
 
 ![Status](https://img.shields.io/badge/status-active-brightgreen)
