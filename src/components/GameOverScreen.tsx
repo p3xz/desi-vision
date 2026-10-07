@@ -6,6 +6,7 @@ import {
   saveScore,
   type LeaderboardEntry,
 } from "../game/leaderboard";
+import { downloadScoreCard } from "../game/scorecard";
 import { sound } from "../game/sounds";
 import { MODE_META, type GameStats } from "../game/types";
 
@@ -19,6 +20,7 @@ export default function GameOverScreen({ stats, onRestart, onHome }: Props) {
   const [board, setBoard] = useState<LeaderboardEntry[]>(() => loadLeaderboard());
   const [name, setName] = useState("");
   const [saved, setSaved] = useState(false);
+  const [cardSaved, setCardSaved] = useState(false);
   const canSave = !saved && qualifiesForBoard(stats.score);
 
   const handleSave = () => {
@@ -139,6 +141,17 @@ export default function GameOverScreen({ stats, onRestart, onHome }: Props) {
           >
             SCAN AGAIN
           </motion.button>
+          <button
+            onClick={() => {
+              if (downloadScoreCard(stats)) {
+                sound.tag();
+                setCardSaved(true);
+              }
+            }}
+            className="tech-border px-8 py-3.5 font-mono text-sm tracking-[0.2em] text-dim transition-colors hover:border-acid hover:text-acid"
+          >
+            {cardSaved ? "CARD SAVED" : "SHARE SCORE CARD"}
+          </button>
           <button
             onClick={() => {
               sound.click();
