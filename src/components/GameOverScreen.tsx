@@ -6,6 +6,7 @@ import {
   saveScore,
   type LeaderboardEntry,
 } from "../game/leaderboard";
+import { recordBestScore } from "../game/bestScores";
 import { downloadScoreCard } from "../game/scorecard";
 import { sound } from "../game/sounds";
 import { MODE_META, type GameStats } from "../game/types";
@@ -18,6 +19,7 @@ interface Props {
 
 export default function GameOverScreen({ stats, onRestart, onHome }: Props) {
   const [board, setBoard] = useState<LeaderboardEntry[]>(() => loadLeaderboard());
+  const [newBest] = useState(() => recordBestScore(stats.mode, stats.score));
   const [name, setName] = useState("");
   const [saved, setSaved] = useState(false);
   const [cardSaved, setCardSaved] = useState(false);
@@ -55,6 +57,11 @@ export default function GameOverScreen({ stats, onRestart, onHome }: Props) {
           <div className="font-mono text-[11px] tracking-[0.3em] text-dim">
             FINAL SCORE
           </div>
+          {newBest && (
+            <div className="mt-2 inline-block border border-acid/60 bg-acid/10 px-3 py-1 font-mono text-[11px] tracking-[0.3em] text-acid">
+              NEW BEST
+            </div>
+          )}
           <motion.div
             initial={{ scale: 0.7, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}

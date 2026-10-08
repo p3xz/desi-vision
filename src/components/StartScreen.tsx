@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { loadBestScores, type BestScores } from "../game/bestScores";
 import { sound } from "../game/sounds";
 import { MODE_META, type GameMode, type Screen } from "../game/types";
 
@@ -19,6 +20,7 @@ const MODES: GameMode[] = ["quick", "chaos", "free"];
 export default function StartScreen({ onStart, onNavigate }: Props) {
   const [mode, setMode] = useState<GameMode>("quick");
   const [muted, setMuted] = useState(sound.isMuted());
+  const [bests] = useState<BestScores>(() => loadBestScores());
 
   const toggleMute = () => {
     const next = !muted;
@@ -107,6 +109,9 @@ export default function StartScreen({ onStart, onNavigate }: Props) {
                 </div>
                 <div className="mt-2 text-xs leading-relaxed text-dim">
                   {meta.tagline}
+                </div>
+                <div className="mt-3 font-mono text-[11px] tracking-[0.25em] text-acid-dim">
+                  {bests[m] > 0 ? `BEST ${bests[m]}` : "NO RECORD YET"}
                 </div>
               </button>
             );
