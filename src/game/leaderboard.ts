@@ -53,3 +53,14 @@ export function qualifiesForBoard(score: number): boolean {
   const list = loadLeaderboard();
   return list.length < MAX_ENTRIES || score > list[list.length - 1].score;
 }
+
+/** Reset the board back to its seeded defaults. */
+export function resetLeaderboard(): LeaderboardEntry[] {
+  const d = cloneDefaults();
+  try {
+    localStorage.setItem(KEY, JSON.stringify(d));
+  } catch {
+    /* storage unavailable, keep going */
+  }
+  return d;
+}

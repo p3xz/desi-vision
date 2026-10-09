@@ -3,6 +3,7 @@ import { useState } from "react";
 import {
   loadLeaderboard,
   qualifiesForBoard,
+  resetLeaderboard,
   saveScore,
   type LeaderboardEntry,
 } from "../game/leaderboard";
@@ -23,6 +24,7 @@ export default function GameOverScreen({ stats, onRestart, onHome }: Props) {
   const [name, setName] = useState("");
   const [saved, setSaved] = useState(false);
   const [cardSaved, setCardSaved] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
   const canSave = !saved && qualifiesForBoard(stats.score);
 
   const handleSave = () => {
@@ -112,8 +114,33 @@ export default function GameOverScreen({ stats, onRestart, onHome }: Props) {
 
         {/* leaderboard */}
         <div className="glass mt-6 px-6 py-6 text-left">
-          <div className="mb-4 font-mono text-[11px] tracking-[0.3em] text-acid">
-            VILLAGE LEADERBOARD
+          <div className="mb-4 flex items-center justify-between">
+            <div className="font-mono text-[11px] tracking-[0.3em] text-acid">
+              VILLAGE LEADERBOARD
+            </div>
+            {confirmReset ? (
+              <button
+                onClick={() => {
+                  setBoard(resetLeaderboard());
+                  setConfirmReset(false);
+                  sound.tag();
+                }}
+                className="border border-red-500/60 bg-red-500/10 px-3 py-1.5 font-mono text-[10px] tracking-[0.2em] text-red-400"
+              >
+                CONFIRM RESET?
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  sound.click();
+                  setConfirmReset(true);
+                  setTimeout(() => setConfirmReset(false), 4000);
+                }}
+                className="border border-line px-3 py-1.5 font-mono text-[10px] tracking-[0.2em] text-dim transition-colors hover:border-bone hover:text-bone"
+              >
+                RESET BOARD
+              </button>
+            )}
           </div>
           <ol className="space-y-2">
             {board.map((e, i) => (
