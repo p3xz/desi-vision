@@ -18,6 +18,9 @@ interface Props {
   onHome: () => void;
 }
 
+const RIVAL_NAME = "CHAUDHARY";
+const RIVAL_SCORE = 5200; // matches the leaderboard's default top seed
+
 export default function GameOverScreen({ stats, onRestart, onHome }: Props) {
   const [board, setBoard] = useState<LeaderboardEntry[]>(() => loadLeaderboard());
   const [newBest] = useState(() => recordBestScore(stats.mode, stats.score));
@@ -26,6 +29,11 @@ export default function GameOverScreen({ stats, onRestart, onHome }: Props) {
   const [cardSaved, setCardSaved] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const canSave = !saved && qualifiesForBoard(stats.score);
+  const chaudharyGap = RIVAL_SCORE - stats.score;
+  const chaudharyPct = Math.max(
+    0,
+    Math.min(100, (stats.score / RIVAL_SCORE) * 100)
+  );
 
   const handleSave = () => {
     const entry: LeaderboardEntry = {
@@ -85,6 +93,30 @@ export default function GameOverScreen({ stats, onRestart, onHome }: Props) {
                 ×{stats.bestCombo}
               </div>
             </div>
+          </div>
+
+          {/* Beat CHAUDHARY progress hint */}
+          <div className="mt-6 border-t border-line pt-5">
+            {chaudharyGap > 0 ? (
+              <>
+                <div className="font-mono text-[11px] tracking-[0.3em] text-dim">
+                  <span className="font-bold text-acid">{chaudharyGap}</span>{" "}
+                  PTS AWAY FROM DETHRONING {RIVAL_NAME}
+                </div>
+                <div className="tech-border mt-3 h-2 w-full overflow-hidden bg-ink">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${chaudharyPct}%` }}
+                    transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
+                    className="h-full bg-acid"
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="font-mono text-[11px] tracking-[0.3em] text-acid">
+                {RIVAL_NAME} HAS BEEN DETHRONED
+              </div>
+            )}
           </div>
 
           {canSave && (

@@ -28,7 +28,7 @@ focused commit.
 12. [x] Shareable score card: render final score to canvas and offer download.
 13. [x] Persist best score per mode and show it on the start screen mode cards.
 14. [x] Leaderboard reset button with a confirm step.
-15. "Beat CHAUDHARY" progress hint on the game over screen.
+15. [x] "Beat CHAUDHARY" progress hint on the game over screen.
 
 ## Polish and hygiene
 
