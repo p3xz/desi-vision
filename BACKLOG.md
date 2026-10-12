@@ -33,7 +33,7 @@ focused commit.
 ## Polish and hygiene
 
 16. [x] Custom favicon: acid-green scanner reticle SVG.
-17. OG meta image and description for link previews.
+17. [x] OG meta image and description for link previews.
 18. README screenshots: add start screen and gameplay captures.
 19. First-run tutorial overlay: 3 swipeable cards explaining catch, tap-to-tag,
    and modes.
