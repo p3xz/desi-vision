@@ -11,6 +11,12 @@ This is a fictional parody created for entertainment and humor. It does not repr
 
 First committed and deployed on 2026-09-25. The game is live at https://desi-vision.vercel.app.
 
+## Screenshots
+
+| Start screen | Gameplay |
+|---|---|
+| ![Desi Vision start screen](screenshots/start-screen.png) | ![Desi Vision gameplay with target card](screenshots/gameplay.png) |
+
 ## Tech Stack
 
 ![TypeScript](https://skillicons.dev/icons?i=ts) ![React](https://skillicons.dev/icons?i=react) ![Vite](https://skillicons.dev/icons?i=vite) ![Tailwind CSS](https://skillicons.dev/icons?i=tailwind) ![TensorFlow](https://skillicons.dev/icons?i=tensorflow)
