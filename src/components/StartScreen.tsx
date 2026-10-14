@@ -2,7 +2,9 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { loadBestScores, type BestScores } from "../game/bestScores";
 import { sound } from "../game/sounds";
+import { hasSeenTutorial } from "../game/tutorial";
 import { MODE_META, type GameMode, type Screen } from "../game/types";
+import TutorialOverlay from "./TutorialOverlay";
 
 interface Props {
   onStart: (mode: GameMode) => void;
@@ -21,6 +23,7 @@ export default function StartScreen({ onStart, onNavigate }: Props) {
   const [mode, setMode] = useState<GameMode>("quick");
   const [muted, setMuted] = useState(sound.isMuted());
   const [bests] = useState<BestScores>(() => loadBestScores());
+  const [showTutorial, setShowTutorial] = useState(() => !hasSeenTutorial());
 
   const toggleMute = () => {
     const next = !muted;
@@ -133,6 +136,15 @@ export default function StartScreen({ onStart, onNavigate }: Props) {
         <p className="mt-3 font-mono text-[11px] tracking-widest text-dim">
           Camera access is required for the game.
         </p>
+        <button
+          onClick={() => {
+            sound.click();
+            setShowTutorial(true);
+          }}
+          className="mt-4 font-mono text-[11px] tracking-[0.25em] text-acid-dim underline underline-offset-4 transition-colors hover:text-acid"
+        >
+          [ HOW TO PLAY ]
+        </button>
 
         {/* parody disclaimer, short version */}
         <p className="mt-8 max-w-xl text-xs leading-relaxed text-dim">
@@ -153,6 +165,8 @@ export default function StartScreen({ onStart, onNavigate }: Props) {
           </button>
         </p>
       </motion.div>
+
+      {showTutorial && <TutorialOverlay onClose={() => setShowTutorial(false)} />}
     </div>
   );
 }

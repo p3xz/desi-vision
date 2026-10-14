@@ -35,8 +35,8 @@ focused commit.
 16. [x] Custom favicon: acid-green scanner reticle SVG.
 17. [x] OG meta image and description for link previews.
 18. [x] README screenshots: add start screen and gameplay captures.
-19. First-run tutorial overlay: 3 swipeable cards explaining catch, tap-to-tag,
-   and modes.
+19. [x] First-run tutorial overlay: 3 swipeable cards explaining catch,
+   tap-to-tag, and modes.
 20. E2E smoke test: Playwright with Chrome's fake camera device flag, assert
    boot stages and FREE SCAN label rendering.
 21. Trim the TF.js bundle: evaluate importing only the needed backend to cut
