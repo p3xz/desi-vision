@@ -37,7 +37,7 @@ focused commit.
 18. [x] README screenshots: add start screen and gameplay captures.
 19. [x] First-run tutorial overlay: 3 swipeable cards explaining catch,
    tap-to-tag, and modes.
-20. E2E smoke test: Playwright with Chrome's fake camera device flag, assert
+20. [x] E2E smoke test: Playwright with Chrome's fake camera device flag, assert
    boot stages and FREE SCAN label rendering.
 21. Trim the TF.js bundle: evaluate importing only the needed backend to cut
    the lazy chunk size.
