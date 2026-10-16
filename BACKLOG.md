@@ -39,6 +39,6 @@ focused commit.
    tap-to-tag, and modes.
 20. [x] E2E smoke test: Playwright with Chrome's fake camera device flag, assert
    boot stages and FREE SCAN label rendering.
-21. Trim the TF.js bundle: evaluate importing only the needed backend to cut
+21. [x] Trim the TF.js bundle: evaluate importing only the needed backend to cut
    the lazy chunk size.
 22. Camera resolution selector (720p / 1080p) in a small settings panel.

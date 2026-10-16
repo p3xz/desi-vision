@@ -61,12 +61,22 @@ export type DetectorProgress = (stage: string) => void;
  * Lazy-loads TF.js and the COCO-SSD model. The model weights are fetched
  * from a CDN at runtime (disclosed in the Privacy page). Only call this
  * after the player has granted camera access, so the start screen stays fast.
+ *
+ * Only the backends the game needs are imported: WebGL for speed, CPU as a
+ * fallback. The `@tensorflow/tfjs` umbrella package also pulls in the
+ * WebGPU backend plus tfjs-data and tfjs-layers, which the game never uses,
+ * so importing core + backends directly keeps the lazy chunk smaller.
  */
 export async function createDetector(
   onProgress?: DetectorProgress,
 ): Promise<Detector> {
   onProgress?.("LOADING TF.JS RUNTIME");
-  const tf = await import("@tensorflow/tfjs");
+  const tf = await import("@tensorflow/tfjs-core");
+  await import("@tensorflow/tfjs-backend-webgl");
+  await import("@tensorflow/tfjs-backend-cpu");
+  if (!(await tf.setBackend("webgl"))) {
+    await tf.setBackend("cpu");
+  }
   await tf.ready();
   onProgress?.("FETCHING COCO-SSD MODEL");
   const cocoSsd = await import("@tensorflow-models/coco-ssd");
