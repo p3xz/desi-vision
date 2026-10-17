@@ -9,6 +9,12 @@ import {
   type Target,
 } from "../game/targets";
 import {
+  CAMERA_RESOLUTIONS,
+  loadCameraResolution,
+  saveCameraResolution,
+  type CameraResolution,
+} from "../game/cameraSettings";
+import {
   MODE_META,
   type CameraErrorKind,
   type GameMode,
@@ -98,6 +104,13 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
   const [facing, setFacing] = useState<"environment" | "user">("environment");
   const facingRef = useRef(facing);
   facingRef.current = facing;
+  /* camera resolution; mirrored in a ref so the boot effect reads it */
+  const [resolution, setResolution] = useState<CameraResolution>(() =>
+    loadCameraResolution(),
+  );
+  const resolutionRef = useRef(resolution);
+  resolutionRef.current = resolution;
+  const [showSettings, setShowSettings] = useState(false);
 
   /* ---------------- helpers ---------------- */
 
@@ -120,12 +133,16 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
    * flip actually lands on the other lens. Falls back to a hint when the
    * device refuses the exact constraint.
    */
-  const requestCamera = async (f: "environment" | "user") => {
+  const requestCamera = async (
+    f: "environment" | "user",
+    res: CameraResolution,
+  ) => {
+    const { width, height } = CAMERA_RESOLUTIONS[res];
     const constraints = (facingMode: ConstrainDOMString): MediaStreamConstraints => ({
       video: {
         facingMode,
-        width: { ideal: 1280 },
-        height: { ideal: 720 },
+        width: { ideal: width },
+        height: { ideal: height },
       },
       audio: false,
     });
@@ -238,7 +255,7 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
       setDetections([]);
       setBoot("REQUESTING CAMERA");
       try {
-        const stream = await requestCamera(facingRef.current);
+        const stream = await requestCamera(facingRef.current, resolutionRef.current);
         if (cancelled) {
           stream.getTracks().forEach((tr) => tr.stop());
           return;
@@ -418,7 +435,7 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
     const next = facingRef.current === "environment" ? "user" : "environment";
     let stream: MediaStream;
     try {
-      stream = await requestCamera(next);
+      stream = await requestCamera(next, resolutionRef.current);
     } catch {
       if (mountedRef.current) showFeed(line("CAMERA SWITCH FAILED"), 1600);
       return;
@@ -440,6 +457,38 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
     setFacing(next);
     sound.click();
     showFeed(line("CAMERA FLIPPED"), 1400);
+  };
+
+  /** Switch resolution mid-game by restarting the stream at the new size. */
+  const applyResolution = async (next: CameraResolution) => {
+    if (next === resolutionRef.current) {
+      setShowSettings(false);
+      return;
+    }
+    if (!booted || !mountedRef.current) {
+      saveCameraResolution(next);
+      setResolution(next);
+      setShowSettings(false);
+      return;
+    }
+    let stream: MediaStream;
+    try {
+      stream = await requestCamera(facingRef.current, next);
+    } catch {
+      if (mountedRef.current) showFeed(line("RESOLUTION SWITCH FAILED"), 1600);
+      return;
+    }
+    if (!mountedRef.current) {
+      stream.getTracks().forEach((tr) => tr.stop());
+      return;
+    }
+    streamRef.current?.getTracks().forEach((tr) => tr.stop());
+    await attachStream(stream);
+    saveCameraResolution(next);
+    setResolution(next);
+    setShowSettings(false);
+    sound.click();
+    showFeed(`RESOLUTION ${CAMERA_RESOLUTIONS[next].label}`, 1400);
   };
 
   /* ---------------- render ---------------- */
@@ -621,6 +670,17 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
             <button
               onClick={(e) => {
                 e.stopPropagation();
+                setShowSettings((s) => !s);
+                sound.click();
+              }}
+              className="glass px-3 py-2 font-mono text-[10px] tracking-widest text-dim hover:text-bone"
+              aria-label="Toggle settings panel"
+            >
+              SETTINGS
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
                 sound.click();
                 onExit();
               }}
@@ -630,6 +690,37 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
             </button>
           </div>
         </div>
+
+        {/* settings panel: camera resolution selector */}
+        {showSettings && (
+          <div
+            className="glass absolute top-16 right-4 z-30 px-4 py-3 sm:right-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="font-mono text-[10px] tracking-[0.25em] text-dim">
+              CAMERA RESOLUTION
+            </div>
+            <div className="mt-2 flex gap-2">
+              {(Object.keys(CAMERA_RESOLUTIONS) as CameraResolution[]).map((r) => (
+                <button
+                  key={r}
+                  onClick={() => void applyResolution(r)}
+                  className={`px-3 py-2 font-mono text-[11px] tracking-widest ${
+                    resolution === r
+                      ? "bg-acid font-bold text-ink"
+                      : "border border-bone/20 text-bone hover:border-dim"
+                  }`}
+                  aria-pressed={resolution === r}
+                >
+                  {CAMERA_RESOLUTIONS[r].label}
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 max-w-[16rem] font-mono text-[10px] leading-relaxed text-dim">
+              1080P is sharper but heavier. 720P runs smoother on most phones.
+            </p>
+          </div>
+        )}
 
         {/* scanner feed message */}
         <div className="pointer-events-none absolute top-24 right-0 left-0 z-20 flex justify-center px-4">

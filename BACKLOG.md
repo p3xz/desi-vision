@@ -41,4 +41,4 @@ focused commit.
    boot stages and FREE SCAN label rendering.
 21. [x] Trim the TF.js bundle: evaluate importing only the needed backend to cut
    the lazy chunk size.
-22. Camera resolution selector (720p / 1080p) in a small settings panel.
+22. [x] Camera resolution selector (720p / 1080p) in a small settings panel.
