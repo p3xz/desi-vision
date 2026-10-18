@@ -111,6 +111,11 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
   const resolutionRef = useRef(resolution);
   resolutionRef.current = resolution;
   const [showSettings, setShowSettings] = useState(false);
+  /* pause freezes the timer, detection loop, and chaos rotation; the
+     camera stream keeps running underneath the pause overlay */
+  const [paused, setPaused] = useState(false);
+  const pausedRef = useRef(paused);
+  pausedRef.current = paused;
 
   /* ---------------- helpers ---------------- */
 
@@ -308,7 +313,7 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
   /* ---------------- detection loop ---------------- */
 
   useEffect(() => {
-    if (!booted) return;
+    if (!booted || paused) return;
     const id = window.setInterval(async () => {
       const det = detectorRef.current;
       const v = videoRef.current;
@@ -325,12 +330,12 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
     }, 700);
     return () => window.clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [booted]);
+  }, [booted, paused]);
 
   /* ---------------- round timer ---------------- */
 
   useEffect(() => {
-    if (!booted || meta.duration == null) return;
+    if (!booted || paused || meta.duration == null) return;
     const id = window.setInterval(() => {
       const left = (timeRef.current ?? 0) - 1;
       timeRef.current = left;
@@ -344,12 +349,12 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
     }, 1000);
     return () => window.clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [booted]);
+  }, [booted, paused]);
 
   /* ---------------- chaos rotation ---------------- */
 
   useEffect(() => {
-    if (!booted || mode !== "chaos") return;
+    if (!booted || paused || mode !== "chaos") return;
     const id = window.setInterval(() => {
       if (lockRef.current || !mountedRef.current) return;
       const s = statsRef.current;
@@ -363,12 +368,13 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
     }, 6000);
     return () => window.clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [booted, mode]);
+  }, [booted, mode, paused]);
 
   /* ---------------- manual tap-to-tag ---------------- */
 
   const onVideoTap = (e: React.MouseEvent) => {
     /* tap-to-tag completes the first manual target currently in play */
+    if (pausedRef.current) return;
     const t = targetRef.current.find((tg) => tg.manual);
     if (!t || lockRef.current || mode === "free") return;
     const el = wrapRef.current;
@@ -678,6 +684,19 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
             >
               SETTINGS
             </button>
+            {booted && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setPaused(true);
+                  sound.click();
+                }}
+                className="glass px-3 py-2 font-mono text-[10px] tracking-widest text-dim hover:text-bone"
+                aria-label="Pause game"
+              >
+                PAUSE
+              </button>
+            )}
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -719,6 +738,49 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
             <p className="mt-2 max-w-[16rem] font-mono text-[10px] leading-relaxed text-dim">
               1080P is sharper but heavier. 720P runs smoother on most phones.
             </p>
+          </div>
+        )}
+
+        {/* pause overlay: timer, detection, and chaos rotation are frozen;
+            the camera stream stays live underneath */}
+        {paused && booted && (
+          <div
+            className="absolute inset-0 z-40 flex items-center justify-center bg-ink/80 px-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="glass w-full max-w-xs px-6 py-6 text-center">
+              <div className="font-mono text-[11px] tracking-[0.35em] text-dim">
+                GAME PAUSED
+              </div>
+              <div className="mt-2 text-2xl font-bold tracking-tight text-bone">
+                Take a breath.
+              </div>
+              <p className="mt-1 font-mono text-[11px] leading-relaxed tracking-widest text-dim">
+                Timer and scanner are frozen. Camera stays live.
+              </p>
+              <div className="mt-5 flex gap-2">
+                <button
+                  onClick={() => {
+                    setPaused(false);
+                    sound.click();
+                  }}
+                  className="flex-1 bg-acid px-3 py-2.5 font-mono text-xs font-bold tracking-widest text-ink"
+                  aria-label="Resume game"
+                >
+                  RESUME
+                </button>
+                <button
+                  onClick={() => {
+                    sound.click();
+                    onExit();
+                  }}
+                  className="flex-1 border border-bone/20 px-3 py-2.5 font-mono text-xs tracking-widest text-bone hover:text-danger"
+                  aria-label="Quit game"
+                >
+                  QUIT
+                </button>
+              </div>
+            </div>
           </div>
         )}
 

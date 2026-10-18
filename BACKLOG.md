@@ -42,3 +42,20 @@ focused commit.
 21. [x] Trim the TF.js bundle: evaluate importing only the needed backend to cut
    the lazy chunk size.
 22. [x] Camera resolution selector (720p / 1080p) in a small settings panel.
+
+## Batch 2 (added 2026-10-17, each item verified missing from the code)
+
+23. [x] Pause button in the game top bar: PAUSE freezes the round timer, the
+   detection loop, and the chaos rotation; a pause overlay offers Resume and
+   Quit; the camera stream stays live; no screen shake for reduced-motion
+   users.
+24. Keyboard shortcuts in game: Space pauses/resumes, M toggles mute, Esc
+   exits the round.
+25. Visual low-time warning: timer text and progress bar turn red and pulse
+   at 10 seconds or less in timed modes (today only the tick sound marks it).
+26. Add 3 more manual-tag targets (LADDU, DHOL, CHAI KETTLE) with tap-to-tag
+   art and flavor hints.
+27. Catches-per-minute on the game over screen: catches divided by round
+   duration, shown next to CATCHES and BEST COMBO.
+28. aria-label on the EXIT button in the game top bar (the other four top-bar
+   buttons already have one).
