@@ -116,6 +116,9 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
   const [paused, setPaused] = useState(false);
   const pausedRef = useRef(paused);
   pausedRef.current = paused;
+  /* booted mirrored in a ref for the keyboard shortcut listener */
+  const bootedRef = useRef(booted);
+  bootedRef.current = booted;
 
   /* ---------------- helpers ---------------- */
 
@@ -421,8 +424,11 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
     });
   }, [catchFx, reducedMotion]);
 
+  const mutedRef = useRef(muted);
+  mutedRef.current = muted;
+
   const toggleMute = () => {
-    const next = !muted;
+    const next = !mutedRef.current;
     sound.setMuted(next);
     setMuted(next);
   };
@@ -434,6 +440,31 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
       return next;
     });
   };
+
+  /* keyboard shortcuts: Space pauses/resumes, M toggles mute, Esc exits
+     the round. Focused buttons keep their own keys, so skip when one of
+     them is focused to avoid double actions. */
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!bootedRef.current) return;
+      const el = e.target as HTMLElement | null;
+      const tag = el?.tagName;
+      if (tag === "BUTTON" || tag === "INPUT" || tag === "TEXTAREA") return;
+      if (e.key === " ") {
+        e.preventDefault();
+        setPaused((p) => !p);
+        sound.click();
+      } else if (e.key === "m" || e.key === "M") {
+        toggleMute();
+      } else if (e.key === "Escape") {
+        sound.click();
+        onExit();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /** Flip between front and rear cameras mid-game without reloading the model. */
   const switchCamera = async () => {
@@ -757,6 +788,9 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
               </div>
               <p className="mt-1 font-mono text-[11px] leading-relaxed tracking-widest text-dim">
                 Timer and scanner are frozen. Camera stays live.
+              </p>
+              <p className="mt-1 font-mono text-[10px] tracking-widest text-dim">
+                SPACE: RESUME · M: MUTE · ESC: EXIT
               </p>
               <div className="mt-5 flex gap-2">
                 <button

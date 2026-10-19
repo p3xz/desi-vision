@@ -49,7 +49,7 @@ focused commit.
    detection loop, and the chaos rotation; a pause overlay offers Resume and
    Quit; the camera stream stays live; no screen shake for reduced-motion
    users.
-24. Keyboard shortcuts in game: Space pauses/resumes, M toggles mute, Esc
+24. [x] Keyboard shortcuts in game: Space pauses/resumes, M toggles mute, Esc
    exits the round.
 25. Visual low-time warning: timer text and progress bar turn red and pulse
    at 10 seconds or less in timed modes (today only the tick sound marks it).
