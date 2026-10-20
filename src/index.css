@@ -182,6 +182,21 @@ body {
   animation: float-y 5s ease-in-out infinite;
 }
 
+/* Urgent low-time pulse: timer text and progress bar flash visually during
+   the last 10 seconds of a timed round. */
+@keyframes dv-timer-urgent {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+.anim-timer-urgent {
+  animation: dv-timer-urgent 0.8s ease-in-out infinite;
+}
+
 /* honor the OS reduced-motion setting: kill the decorative motion so the
    game stays readable for users who ask for less animation */
 @media (prefers-reduced-motion: reduce) {
@@ -191,7 +206,8 @@ body {
   .anim-blink,
   .anim-marquee,
   .anim-float,
-  .anim-shake {
+  .anim-shake,
+  .anim-timer-urgent {
     animation: none;
   }
 }

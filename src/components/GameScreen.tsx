@@ -548,6 +548,15 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
       ? Math.max(0, timeLeft / meta.duration)
       : 1;
 
+  /* visual low-time warning: timer text and progress bar turn red and pulse
+     when ten seconds or less remain in a timed mode (free scan has no
+     timer, so meta.duration guards it) */
+  const lowTime =
+    meta.duration != null && timeLeft != null && timeLeft <= 10 && timeLeft > 0;
+  const timerTextClass = lowTime
+    ? "font-mono text-2xl font-bold text-danger anim-timer-urgent"
+    : "font-mono text-2xl font-bold text-bone";
+
   return (
     <div
       ref={wrapRef}
@@ -862,7 +871,7 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
                       DOUBLE TARGET. NO MERCY.
                     </div>
                     <div className="text-right">
-                      <div className="font-mono text-2xl font-bold text-bone">
+                      <div className={timerTextClass}>
                         {timeLeft != null ? formatTime(timeLeft) : formatTime(0)}
                       </div>
                       <div className="font-mono text-[11px] tracking-[0.25em] text-acid">
@@ -892,7 +901,11 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
                   </div>
                   <div className="mt-3 h-1.5 w-full bg-bone/10">
                     <div
-                      className="h-full bg-danger transition-all duration-1000 ease-linear"
+                      className={
+                        lowTime
+                          ? "h-full bg-danger transition-all duration-1000 ease-linear anim-timer-urgent"
+                          : "h-full bg-danger transition-all duration-1000 ease-linear"
+                      }
                       style={{ width: `${progress * 100}%` }}
                     />
                   </div>
@@ -922,7 +935,7 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
                       <div className="mt-1 text-xs text-dim">{targets[0].hint}</div>
                     </div>
                     <div className="text-right">
-                      <div className="font-mono text-2xl font-bold text-bone">
+                      <div className={timerTextClass}>
                         {timeLeft != null ? formatTime(timeLeft) : formatTime(0)}
                       </div>
                       <div className="font-mono text-[11px] tracking-[0.25em] text-acid">
@@ -932,7 +945,11 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
                   </div>
                   <div className="mt-3 h-1.5 w-full bg-bone/10">
                     <div
-                      className="h-full bg-acid transition-all duration-1000 ease-linear"
+                      className={
+                        lowTime
+                          ? "h-full bg-danger transition-all duration-1000 ease-linear anim-timer-urgent"
+                          : "h-full bg-acid transition-all duration-1000 ease-linear"
+                      }
                       style={{ width: `${progress * 100}%` }}
                     />
                   </div>

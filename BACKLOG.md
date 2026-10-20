@@ -51,7 +51,7 @@ focused commit.
    users.
 24. [x] Keyboard shortcuts in game: Space pauses/resumes, M toggles mute, Esc
    exits the round.
-25. Visual low-time warning: timer text and progress bar turn red and pulse
+25. [x] Visual low-time warning: timer text and progress bar turn red and pulse
    at 10 seconds or less in timed modes (today only the tick sound marks it).
 26. Add 3 more manual-tag targets (LADDU, DHOL, CHAI KETTLE) with tap-to-tag
    art and flavor hints.
