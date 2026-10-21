@@ -18,7 +18,7 @@ const CARDS: Card[] = [
   {
     step: "STEP 2 / TAG",
     title: "TAP TO TAG",
-    body: "Some things are too desi for the AI to classify. HOOKAH, GAMCHA, JUTTI, DIYA, TABLA and KULHAD never auto-detect, so tap their cards to tag them yourself. 500 XP each, no scanning required.",
+    body: "Some things are too desi for the AI to classify. HOOKAH, GAMCHA, JUTTI, DIYA, TABLA, KULHAD, LADDU, DHOL and CHAI KETTLE never auto-detect, so tap their cards to tag them yourself. 500 XP each, no scanning required.",
   },
   {
     step: "STEP 3 / MODES",

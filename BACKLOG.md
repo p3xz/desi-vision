@@ -53,8 +53,8 @@ focused commit.
    exits the round.
 25. [x] Visual low-time warning: timer text and progress bar turn red and pulse
    at 10 seconds or less in timed modes (today only the tick sound marks it).
-26. Add 3 more manual-tag targets (LADDU, DHOL, CHAI KETTLE) with tap-to-tag
-   art and flavor hints.
+26. [x] Add 3 more manual-tag targets (LADDU, DHOL, CHAI KETTLE) with
+   tap-to-tag art and flavor hints.
 27. Catches-per-minute on the game over screen: catches divided by round
    duration, shown next to CATCHES and BEST COMBO.
 28. aria-label on the EXIT button in the game top bar (the other four top-bar

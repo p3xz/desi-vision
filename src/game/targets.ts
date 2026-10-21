@@ -137,6 +137,33 @@ export const TARGETS: Target[] = [
     hint: "Chai tastes better in clay. Science.",
     art: " \\     /\n  \\   /\n   \\_/",
   },
+  {
+    id: "laddu",
+    name: "LADDU",
+    cocoClasses: null,
+    manual: true,
+    xp: 500,
+    hint: "Ghee-powered happiness, served round.",
+    art: "  (o)(o)(o)\n   \\_____/",
+  },
+  {
+    id: "dhol",
+    name: "DHOL",
+    cocoClasses: null,
+    manual: true,
+    xp: 500,
+    hint: "The original bass drop.",
+    art: "   _______\n  /       \\\n |  X   X  |\n  \\_______/",
+  },
+  {
+    id: "chai-kettle",
+    name: "CHAI KETTLE",
+    cocoClasses: null,
+    manual: true,
+    xp: 500,
+    hint: "Kadak fuel for every conversation.",
+    art: "  ___\n (   )>\n  |_|",
+  },
 ];
 
 /** Minimum COCO-SSD confidence that counts as a catch. */
