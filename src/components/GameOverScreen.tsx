@@ -29,6 +29,9 @@ export default function GameOverScreen({ stats, onRestart, onHome }: Props) {
   const [cardSaved, setCardSaved] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const canSave = !saved && qualifiesForBoard(stats.score);
+  const roundSeconds = MODE_META[stats.mode].duration;
+  const catchesPerMin =
+    roundSeconds != null ? (stats.catches * 60) / roundSeconds : null;
   const chaudharyGap = RIVAL_SCORE - stats.score;
   const chaudharyPct = Math.max(
     0,
@@ -80,7 +83,7 @@ export default function GameOverScreen({ stats, onRestart, onHome }: Props) {
           >
             {stats.score}
           </motion.div>
-          <div className="mt-5 grid grid-cols-2 gap-3">
+          <div className="mt-5 grid grid-cols-3 gap-3">
             <div className="tech-border bg-panel/60 px-4 py-3">
               <div className="font-mono text-[10px] tracking-[0.25em] text-dim">CATCHES</div>
               <div className="mt-1 font-mono text-2xl font-bold text-bone">
@@ -91,6 +94,12 @@ export default function GameOverScreen({ stats, onRestart, onHome }: Props) {
               <div className="font-mono text-[10px] tracking-[0.25em] text-dim">BEST COMBO</div>
               <div className="mt-1 font-mono text-2xl font-bold text-bone">
                 ×{stats.bestCombo}
+              </div>
+            </div>
+            <div className="tech-border bg-panel/60 px-4 py-3">
+              <div className="font-mono text-[10px] tracking-[0.25em] text-dim">CATCHES/MIN</div>
+              <div className="mt-1 font-mono text-2xl font-bold text-bone">
+                {catchesPerMin != null ? catchesPerMin.toFixed(1) : "N/A"}
               </div>
             </div>
           </div>
