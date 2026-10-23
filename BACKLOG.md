@@ -57,5 +57,5 @@ focused commit.
    tap-to-tag art and flavor hints.
 27. [x] Catches-per-minute on the game over screen: catches divided by round
    duration, shown next to CATCHES and BEST COMBO.
-28. aria-label on the EXIT button in the game top bar (the other four top-bar
+28. [x] aria-label on the EXIT button in the game top bar (the other four top-bar
    buttons already have one).

@@ -744,6 +744,7 @@ export default function GameScreen({ mode, onExit, onGameOver }: Props) {
                 onExit();
               }}
               className="glass px-3 py-2 font-mono text-[10px] tracking-widest text-dim hover:text-danger"
+              aria-label="Exit game"
             >
               EXIT
             </button>
