@@ -190,7 +190,7 @@ export function CreditsPage({ onBack }: PageProps) {
             GITHUB
           </a>
           <a
-            href="https://linkedin.com/in/namish-yadav-639769408"
+            href="https://linkedin.com/in/namishyadav"
             target="_blank"
             rel="noreferrer"
             className="text-acid-dim underline underline-offset-4 hover:text-acid"
